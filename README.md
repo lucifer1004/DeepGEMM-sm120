@@ -28,9 +28,10 @@ derived from DeepSeek DeepGEMM and distributed under the same MIT license
 To vendor this layer into your fork, follow
 [docs/vendoring.md](docs/vendoring.md). In short: copy
 `deep_gemm/include/deep_gemm/**` over your tree and record the release tag in
-the commit message. Forks commit nothing extra -- provenance travels in each
-header's `Canonical source:` comment, and `tools/check_vendor.py --fork
-<path>` (run from a DeepGEMM-sm120 checkout) verifies drift.
+the commit message. Forks commit nothing extra and the files carry no
+marker -- `tools/check_vendor.py --fork <path>` (run from a DeepGEMM-sm120
+checkout) verifies drift, and a scheduled watcher monitors registered
+downstreams.
 
 ## Development gates
 

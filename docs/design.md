@@ -94,16 +94,17 @@ was allowlisted; v0.1.1 inlined the single packing helper into
 - Tags: `vX.Y.Z`. Breaking symbol-contract changes bump the minor version;
   pure bug fixes and new vendored kernels bump patch/minor per impact.
 - Forks pin a release by copying the vendored tree and naming the tag in
-  the commit message; provenance also travels in each vendored header's
-  `Canonical source:` comment. Nothing vendoring-specific is committed to a
-  fork: the per-file sha256 manifest (`VENDOR-sm120.json`) lives in this
-  repo per release, and `tools/check_vendor.py --fork <path>` runs from a
-  DeepGEMM-sm120 checkout against any fork.
+  the commit message. Nothing vendoring-specific is committed to a fork and
+  the vendored files carry no marker of any kind: the per-file sha256
+  manifest (`VENDOR-sm120.json`) lives in this repo per release, and
+  `tools/check_vendor.py --fork <path>` runs from a DeepGEMM-sm120 checkout
+  against any fork.
 - Fixes happen here once; forks sync by re-copying at a new tag, running
   the drift check, and rerunning their SM120 tests. See
   docs/vendoring.md for the step-by-step.
 - Downstreams can get *ahead* of this repo (a fork merges a third-party PR
-  touching the vendored files). The round trip is closed by
+  touching the vendored files; the files themselves carry no pointer back
+  here). The round trip is closed by
   `tools/watch_downstreams.py`: a scheduled workflow
   (.github/workflows/drift-watch.yml) fetches every registered downstream's
   vendored tree daily and compares it against all release manifests
