@@ -59,8 +59,10 @@ the vendored kernels assume the host upholds them:
   boundary inside a tile and silently compute the straddled rows with the
   wrong group's B (this presented as "an empty middle group corrupts later
   groups" — the real trigger is any boundary misaligned to the runtime
-  setting). A host-side opt-in checker (`DG_CHECK_CONTIGUOUS_LABELS=1`) in
-  the reference glue turns such violations into a loud error.
+  setting). Both reference lineages carry an opt-in host checker
+  (`DG_CHECK_CONTIGUOUS_LABELS=1`, in `csrc/apis/gemm.hpp`, above the
+  vendored layer's scope) that turns such violations into a loud error; the
+  arch-generic version is proposed upstream.
 - **CUDA >= 13 toolkit** for any TU that instantiates the vendored kernels;
   the vendored headers `#error` out on earlier toolkits during SM120 device
   passes (see `common/sm120_utils.cuh`).
