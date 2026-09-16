@@ -32,3 +32,25 @@ Two reference host layers, one per lineage, are kept here as
 
 Start from whichever reference matches your fork's lineage; see
 [docs/vendoring.md](../docs/vendoring.md) for the full adoption playbook.
+
+## Host-side obligations that are easy to miss
+
+These are part of the device layer's contract but enforced on the host —
+the vendored kernels assume the host upholds them:
+
+- **Grouped-GEMM boundary tiles need the scalar epilogue.** The GEMM
+  kernels' TMA-store epilogue writes full `BLOCK_M`-high tiles. TMA clamps
+  only at the tensor map's outermost global dim, so for **m-grouped masked**
+  and **k-grouped** GEMMs — where each group's output slab is *interior* to
+  the flat `[groups * m, n]` allocation — a partial boundary tile would
+  spill rows into the next group's slab. When `m % BLOCK_M != 0` on those
+  paths, the host MUST force the scalar store epilogue, which carries the
+  per-group row bounds (`row_is_valid` / `total_shape_m`):
+  `config.storage_config.swizzle_cd_mode = 0;`
+  Both reference lineages show the guard placement (right after the
+  heuristics pick a config, before descriptor construction). Dense and
+  m-grouped contiguous paths do not need it (boundaries are outermost /
+  block-aligned).
+- **CUDA >= 13 toolkit** for any TU that instantiates the vendored kernels;
+  the vendored headers `#error` out on earlier toolkits during SM120 device
+  passes (see `common/sm120_utils.cuh`).
