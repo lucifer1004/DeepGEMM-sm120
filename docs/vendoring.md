@@ -86,6 +86,11 @@ have them) against the vendored tree before merging the sync.
    new tag.
 2. Run `python3 tools/check_vendor.py --fork /path/to/the/fork` from the
    DeepGEMM-sm120 checkout at that tag — must be clean.
+3. Clear the fork's JIT cache (`DG_JIT_CACHE_DIR`) before testing: DeepJIT's
+   cache key covers the generated translation unit and compiler options but
+   NOT the contents of `#include`d headers, so re-vendored headers alone do
+   not invalidate cached cubins. A fresh cache directory per sync is the
+   safe default.
 3. Rerun the fork's SM120 tests.
 
 Never patch vendored files in the fork: fix here, tag, sync.
