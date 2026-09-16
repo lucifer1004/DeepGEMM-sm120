@@ -8,6 +8,9 @@ jobs:
   gates:
     runs-on: ubuntu-latest
     container: nvidia/cuda:13.2.0-devel-ubuntu24.04
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 
