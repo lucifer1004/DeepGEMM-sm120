@@ -1,0 +1,15 @@
+{
+  "comment": "Downstream refs whose SM120 vendored tree this repo watches for drift. Update refs as PRs merge: after deepseek-ai/DeepGEMM#447 merges, watch nv_dev instead of the PR branch; after vllm-project/DeepGEMM#10 merges, watch vllm-project/DeepGEMM@dev.",
+  "downstreams": [
+    {
+      "name": "nv_dev-lineage fork (PR #447 branch)",
+      "repo": "lucifer1004/DeepGEMM",
+      "ref": "feature/sm120-main-api-migration"
+    },
+    {
+      "name": "vllm-lineage fork (PR #10 branch)",
+      "repo": "lucifer1004/DeepGEMM",
+      "ref": "vendor/sm120-deepgemm-sm120-v0.1.0"
+    }
+  ]
+}

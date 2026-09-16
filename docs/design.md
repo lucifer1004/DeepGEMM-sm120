@@ -102,3 +102,12 @@ was allowlisted; v0.1.1 inlined the single packing helper into
 - Fixes happen here once; forks sync by re-copying at a new tag, running
   the drift check, and rerunning their SM120 tests. See
   docs/vendoring.md for the step-by-step.
+- Downstreams can get *ahead* of this repo (a fork merges a third-party PR
+  touching the vendored files). The round trip is closed by
+  `tools/watch_downstreams.py`: a scheduled workflow
+  (.github/workflows/drift-watch.yml) fetches every registered downstream's
+  vendored tree daily and compares it against all release manifests
+  (.github/downstreams.json). A tree matching no release tag is drift: the
+  workflow opens a `vendor-drift` issue, the change is absorbed here and
+  re-tagged, and the downstream re-vendors. Downstreams commit nothing for
+  this — watching is the upstream's job.

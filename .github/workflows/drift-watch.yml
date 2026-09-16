@@ -1,0 +1,46 @@
+name: drift-watch
+
+# The canonical repo watches its downstreams: any fork can merge a PR that
+# edits the vendored headers directly, and this job is how the upstream finds
+# out. On drift it opens (or updates) a single issue labelled vendor-drift.
+
+on:
+  schedule:
+    - cron: "23 4 * * *" # daily, off-peak
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # tags carry the release manifests
+          fetch-tags: true
+
+      - name: Check downstreams
+        id: check
+        run: |
+          python3 tools/watch_downstreams.py --report drift-report.md
+          echo "exit=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Open or update drift issue
+        if: steps.check.outputs.exit != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh label create vendor-drift --force \
+            --description "A downstream fork's vendored SM120 tree matches no release tag" \
+            --color E99695
+          existing="$(gh issue list --label vendor-drift --state open --json number -q '.[0].number')"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file drift-report.md
+          else
+            gh issue create --title "Downstream vendor drift detected" \
+              --label vendor-drift --body-file drift-report.md
+          fi
