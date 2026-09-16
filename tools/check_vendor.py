@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""Fork-side vendor drift checker for the SM120 device layer.
+"""Vendor drift checker for the SM120 device layer.
 
-Run from (or point at) a fork repository root that carries a
-`VENDOR-sm120.json` manifest copied from a DeepGEMM-sm120 release:
+Runs from the DeepGEMM-sm120 side against any fork checkout; forks commit
+nothing extra (no manifest, no this script) -- provenance travels in the
+vendored files' header comments and in the vendoring commit message.
 
-    python3 tools/check_vendor.py [fork_repo_root]   # default: cwd
+    python3 tools/check_vendor.py --fork <fork_repo_root> [--manifest <path>]
+
+The manifest defaults to the `VENDOR-sm120.json` of this repository (which
+describes the release at its current tag); pass --manifest to check against
+a different release's manifest.
 
 Checks, in both directions:
 
@@ -19,12 +24,11 @@ Checks, in both directions:
 Exit code 0 when clean, 1 on any mismatch. Stdlib only.
 """
 
+import argparse
 import hashlib
 import json
 import sys
 from pathlib import Path
-
-MANIFEST_NAME = "VENDOR-sm120.json"
 
 # Vendored files whose basename does not contain "sm120" but are part of the
 # vendored surface and must be covered by the manifest.
@@ -46,11 +50,17 @@ def is_sm120_named(rel: str) -> bool:
 
 
 def main() -> int:
-    root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path.cwd()
-    manifest_path = root / MANIFEST_NAME
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--fork", required=True, help="fork repository root to check")
+    parser.add_argument("--manifest", default=None,
+                        help="manifest to check against (default: this repo's VENDOR-sm120.json)")
+    args = parser.parse_args()
+
+    root = Path(args.fork).resolve()
+    manifest_path = (Path(args.manifest).resolve() if args.manifest
+                     else Path(__file__).resolve().parents[1] / "VENDOR-sm120.json")
     if not manifest_path.is_file():
-        print(f"error: {manifest_path} not found; copy it from the DeepGEMM-sm120 release",
-              file=sys.stderr)
+        print(f"error: manifest not found: {manifest_path}", file=sys.stderr)
         return 1
 
     try:
@@ -60,10 +70,11 @@ def main() -> int:
         files = manifest["files"]
         assert isinstance(files, dict) and files
     except (KeyError, AssertionError, json.JSONDecodeError) as e:
-        print(f"error: malformed {MANIFEST_NAME}: {e}", file=sys.stderr)
+        print(f"error: malformed {manifest_path}: {e}", file=sys.stderr)
         return 1
 
     print(f"manifest: {upstream} @ {tag} ({len(files)} files)")
+    print(f"fork:     {root}")
 
     problems = 0
 
@@ -72,7 +83,7 @@ def main() -> int:
         p = root / rel
         if not p.is_file():
             print(f"  MISSING  {rel}")
-            print(f"           listed in {MANIFEST_NAME} but absent from the fork;")
+            print(f"           listed in the {tag} manifest but absent from the fork;")
             print(f"           re-vendor {tag} (see docs/vendoring.md)")
             problems += 1
             continue
@@ -90,7 +101,7 @@ def main() -> int:
             rel = str(p.relative_to(root))
             if is_sm120_named(rel) and rel not in files:
                 print(f"  DRIFT    {rel}")
-                print(f"           sm120-named file not covered by {MANIFEST_NAME};")
+                print(f"           sm120-named file not covered by the {tag} manifest;")
                 print(f"           remove it, or upstream it and re-vendor at a new tag")
                 problems += 1
     else:

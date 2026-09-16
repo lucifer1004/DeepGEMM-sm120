@@ -84,7 +84,8 @@ have them) against the vendored tree before merging the sync.
 
 1. Re-copy `deep_gemm/include/deep_gemm/**` and `VENDOR-sm120.json` at the
    new tag.
-2. Run `python3 tools/check_vendor.py` — must be clean.
+2. Run `python3 tools/check_vendor.py --fork /path/to/the/fork` from the
+   DeepGEMM-sm120 checkout at that tag — must be clean.
 3. Rerun the fork's SM120 tests.
 
 Never patch vendored files in the fork: fix here, tag, sync.

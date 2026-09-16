@@ -93,9 +93,12 @@ was allowlisted; v0.1.1 inlined the single packing helper into
 
 - Tags: `vX.Y.Z`. Breaking symbol-contract changes bump the minor version;
   pure bug fixes and new vendored kernels bump patch/minor per impact.
-- Forks pin a release by copying `VENDOR-sm120.json` to their root and
-  running `tools/check_vendor.py` in CI; the manifest carries the upstream
-  repo, tag, and per-file sha256.
+- Forks pin a release by copying the vendored tree and naming the tag in
+  the commit message; provenance also travels in each vendored header's
+  `Canonical source:` comment. Nothing vendoring-specific is committed to a
+  fork: the per-file sha256 manifest (`VENDOR-sm120.json`) lives in this
+  repo per release, and `tools/check_vendor.py --fork <path>` runs from a
+  DeepGEMM-sm120 checkout against any fork.
 - Fixes happen here once; forks sync by re-copying at a new tag, running
-  `check_vendor.py`, and rerunning their SM120 tests. See
+  the drift check, and rerunning their SM120 tests. See
   docs/vendoring.md for the step-by-step.

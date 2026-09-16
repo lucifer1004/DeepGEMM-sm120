@@ -1,3 +1,7 @@
+// Canonical source: github.com/lucifer1004/DeepGEMM-sm120 (SM120 device layer for
+// DeepGEMM forks). Vendored byte-for-byte; do not edit downstream copies -- change
+// the canonical repo and re-vendor by release tag (see docs/vendoring.md).
+
 #pragma once
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-attributes"

@@ -67,12 +67,11 @@ jobs:
             "$RUNNER_TEMP/base-main/deep_gemm/include" \
             "$RUNNER_TEMP/base-main/third-party/cutlass/include"
 
-      - name: Vendor manifest check against a synthetic fork staging
+      - name: Vendor drift check against a synthetic fork staging
         run: |
           set -euo pipefail
           # Simulate a fork: base checkout with the vendored tree copied over it.
           STAGING="$RUNNER_TEMP/staging-fork"
           cp -r "$RUNNER_TEMP/base-main" "$STAGING"
           cp -r deep_gemm "$STAGING/"
-          cp VENDOR-sm120.json "$STAGING/"
-          python3 tools/check_vendor.py "$STAGING"
+          python3 tools/check_vendor.py --fork "$STAGING"
