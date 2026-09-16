@@ -51,6 +51,16 @@ the vendored kernels assume the host upholds them:
   heuristics pick a config, before descriptor construction). Dense and
   m-grouped contiguous paths do not need it (boundaries are outermost /
   block-aligned).
+- **m-grouped contiguous (labels mode): group starts must be multiples of
+  the runtime mk alignment.** The GEMM kernels select B/SFB per `BLOCK_M`
+  tile from the label of the tile's first row, and the reference heuristics
+  guarantee `BLOCK_M` divides `get_mk_alignment_for_contiguous_layout()`.
+  Labels built at a finer granularity than the runtime setting put a group
+  boundary inside a tile and silently compute the straddled rows with the
+  wrong group's B (this presented as "an empty middle group corrupts later
+  groups" — the real trigger is any boundary misaligned to the runtime
+  setting). A host-side opt-in checker (`DG_CHECK_CONTIGUOUS_LABELS=1`) in
+  the reference glue turns such violations into a loud error.
 - **CUDA >= 13 toolkit** for any TU that instantiates the vendored kernels;
   the vendored headers `#error` out on earlier toolkits during SM120 device
   passes (see `common/sm120_utils.cuh`).
