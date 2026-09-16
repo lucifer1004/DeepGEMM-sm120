@@ -9,9 +9,10 @@ are intentionally omitted; execution targets were SM120a-class consumer GPUs.
 The merged tree cross-compiles for `sm_120a` against **both** supported base
 lineages with CUDA 13.2:
 
-- nv_dev-lineage base (DeepSeek `nv_dev` tip at the time of the v0.1.0
-  merge), and
-- main-lineage base (vllm-project/DeepGEMM `dev` + kgroup-fix),
+- main-lineage base (deepseek-ai/DeepGEMM `main` tip), and
+- vllm-lineage base (vllm-project/DeepGEMM `dev` tip),
+
+(see docs/design.md for why pristine `nv_dev` is not a compile target),
 
 using `tools/compile_gate.sh`, which
 

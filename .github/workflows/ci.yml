@@ -26,19 +26,17 @@ jobs:
       - name: Resolve pinned base SHAs
         run: |
           set -euo pipefail
-          REPO=https://github.com/deepseek-ai/DeepGEMM.git
-          # nv_dev-lineage base: pin to the commit recorded at extraction time.
-          NV_SHA="$(git ls-remote "$REPO" | grep -i '^572557e' | head -1 | cut -f1)"
-          if [ -z "$NV_SHA" ]; then
-            echo "error: 572557e no longer resolves on $REPO; update the pin" >&2
-            exit 1
-          fi
-          # main-lineage base: pin to the current main tip.
-          MAIN_SHA="$(git ls-remote "$REPO" refs/heads/main | cut -f1)"
-          echo "nv_dev base:  $NV_SHA"
+          # The SM120 layer targets the post-"Public Release 26/09" (main #432) API
+          # surface. The two deployment lineages are deepseek main and vllm dev;
+          # pristine nv_dev predates that API and is not a compile target (the
+          # nv_dev-lineage vehicle is deepseek-ai/DeepGEMM#447, covered by its own
+          # GPU test suite).
+          MAIN_SHA="$(git ls-remote https://github.com/deepseek-ai/DeepGEMM.git refs/heads/main | cut -f1)"
+          VLLM_SHA="$(git ls-remote https://github.com/vllm-project/DeepGEMM.git refs/heads/dev | cut -f1)"
           echo "main base:    $MAIN_SHA"
-          echo "NV_SHA=$NV_SHA" >> "$GITHUB_ENV"
+          echo "vllm dev base: $VLLM_SHA"
           echo "MAIN_SHA=$MAIN_SHA" >> "$GITHUB_ENV"
+          echo "VLLM_SHA=$VLLM_SHA" >> "$GITHUB_ENV"
 
       - name: Clone bases (cutlass submodule only)
         run: |
@@ -54,14 +52,14 @@ jobs:
               git submodule update --init third-party/cutlass
             cd - > /dev/null
           }
-          clone_base https://github.com/deepseek-ai/DeepGEMM.git "$NV_SHA"   "$RUNNER_TEMP/base-nv-dev"
           clone_base https://github.com/deepseek-ai/DeepGEMM.git "$MAIN_SHA" "$RUNNER_TEMP/base-main"
+          clone_base https://github.com/vllm-project/DeepGEMM.git "$VLLM_SHA" "$RUNNER_TEMP/base-vllm-dev"
 
-      - name: Compile gate vs nv_dev-lineage base
+      - name: Compile gate vs vllm-dev-lineage base
         run: |
           ./tools/compile_gate.sh \
-            "$RUNNER_TEMP/base-nv-dev/deep_gemm/include" \
-            "$RUNNER_TEMP/base-nv-dev/third-party/cutlass/include"
+            "$RUNNER_TEMP/base-vllm-dev/deep_gemm/include" \
+            "$RUNNER_TEMP/base-vllm-dev/third-party/cutlass/include"
 
       - name: Compile gate vs main-lineage base
         run: |
@@ -74,7 +72,7 @@ jobs:
           set -euo pipefail
           # Simulate a fork: base checkout with the vendored tree copied over it.
           STAGING="$RUNNER_TEMP/staging-fork"
-          cp -r "$RUNNER_TEMP/base-nv-dev" "$STAGING"
+          cp -r "$RUNNER_TEMP/base-main" "$STAGING"
           cp -r deep_gemm "$STAGING/"
           cp VENDOR-sm120.json "$STAGING/"
           python3 tools/check_vendor.py "$STAGING"

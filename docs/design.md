@@ -68,14 +68,26 @@ the copies disagreed, one mechanism was kept and the other superseded:
 
 Vendored files may include CUTLASS/CUDA/standard headers, other files in this
 tree, and the fixed allowlist of **base-provided shared headers**
-(`common/{cute_tie,math,packing,tma_copy,types,utils}.cuh`,
+(`common/{cute_tie,math,tma_copy,types,utils}.cuh`,
 `epilogue/transform.cuh`, `ptx/{ld_st,tma,utils}.cuh`), enforced by
 `tools/self_containment.py`. The allowlisted headers **differ textually
-between the nv_dev and main lineages**: the contract with them is
-symbol-level, not byte-level. Vendored code may only rely on symbols present
-in both lineages' versions. Adding a dependency on a symbol missing from
-either lineage is a **breaking change**: it requires a minor version bump and
-a note in the affected `host-glue/` README.
+between lineages**: the contract with them is symbol-level, not byte-level.
+Vendored code may only rely on symbols present in every supported lineage's
+version. Adding a dependency on a symbol missing from any supported lineage
+is a **breaking change**: it requires a minor version bump and a note in the
+affected `host-glue/` README.
+
+**Supported base lineages.** The SM120 layer targets the post-"Public
+Release 26/09" (deepseek-ai/DeepGEMM#432) API surface — the new
+`EpilogueArgs`-based epilogue transforms, current scaling-factor layouts,
+and DeepJIT. The compile gate therefore validates against
+**deepseek-ai/DeepGEMM `main`** and **vllm-project/DeepGEMM `dev`**. The
+pristine DeepSeek `nv_dev` branch predates that API surface and is *not* a
+compile target; the nv_dev-lineage vehicle is the PR #447 branch (nv_dev +
+main-API migration), which carries this layer and is covered by its own GPU
+test suite. (v0.1.0 briefly gated on pristine nv_dev and `common/packing.cuh`
+was allowlisted; v0.1.1 inlined the single packing helper into
+`layout/sparse_mqa_logits.cuh` and corrected the gate bases.)
 
 ## Versioning and sync protocol
 

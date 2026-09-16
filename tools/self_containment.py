@@ -30,16 +30,11 @@ INCLUDE_ROOT = REPO_ROOT / "deep_gemm" / "include"
 # Base-provided shared headers (category 3). Each vendoring fork supplies
 # these; compatibility is symbol-level. Extending this list is a deliberate
 # contract change and must be reflected in docs/design.md.
-#
-# NOTE: `common/packing.cuh` is included by the vendored
-# `layout/sparse_mqa_logits.cuh` and is provided byte-identically by both
-# supported base lineages, so it is part of the contract.
 BASE_PROVIDED_ALLOWLIST = frozenset(
     "deep_gemm/" + p
     for p in (
         "common/cute_tie.cuh",
         "common/math.cuh",
-        "common/packing.cuh",
         "common/tma_copy.cuh",
         "common/types.cuh",
         "common/utils.cuh",
