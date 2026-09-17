@@ -1,6 +1,6 @@
 {
   "upstream": "lucifer1004/DeepGEMM-sm120",
-  "tag": "v0.1.3",
+  "tag": "v0.1.4",
   "files": {
     "deep_gemm/include/deep_gemm/common/sm120_utils.cuh": "18b8f99f38bb53f145b3861417e68511e77b31daad68599c1fa151223f08c45a",
     "deep_gemm/include/deep_gemm/impls/sm120_bf16_gemm.cuh": "8801cba952159be9f736e49ffa60ad7345d0eace3f9988ece0b5d2d0cc34f2e1",
@@ -10,7 +10,7 @@
     "deep_gemm/include/deep_gemm/impls/sm120_fp8_fp4_gemm_1d1d.cuh": "8881c1282c76bcfe1b3e8ea36fe0c3a300231a8d90e57f2f7e22550f0e961c75",
     "deep_gemm/include/deep_gemm/impls/sm120_fp8_fp4_sparse_mqa_logits.cuh": "d6c3454b08d1c22f2c6fa67378f2637d9dec8459a2a79c53b3c6cb3c93b4183f",
     "deep_gemm/include/deep_gemm/impls/sm120_fp8_mqa_logits.cuh": "acdfa3c2ed98bd8c1731b7107d90ca9a668b9ea5e04cbd7c34035284b7a36140",
-    "deep_gemm/include/deep_gemm/impls/sm120_fp8_paged_mqa_logits.cuh": "99fae94b51ea863d1d8b2f62f936019e9b67061df939665f9e9aa082462133db",
+    "deep_gemm/include/deep_gemm/impls/sm120_fp8_paged_mqa_logits.cuh": "9e40696a9e8eda95036dd01b3ad9f76e809ff57ffb4227670aaf4cf90259f57c",
     "deep_gemm/include/deep_gemm/impls/sm120_padding.cuh": "3c1c00fc798861d7012c73d997f7720ab1074f0451804063022247d932d526e6",
     "deep_gemm/include/deep_gemm/impls/sm120_split_k_reduce.cuh": "2cbcf08cba3305f2175ac878adfb9122be69e837dee6564b14c1a21bb82d74b8",
     "deep_gemm/include/deep_gemm/impls/sm120_tf32_hc_prenorm_gemm.cuh": "5540cb8f8117edc93dc9043b925579441b7709a57a14e88c4d6aa0836ef64a76",

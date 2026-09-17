@@ -47,8 +47,8 @@ and implement, per kernel:
 - **Paged MQA logits** (`sm120_fp8_paged_mqa_logits`,
   `sm120_fp4_paged_mqa_logits`) — block tables and their stride, context
   lens, indices, and the schedule metadata produced by
-  `sched::sm120_paged_mqa_logits_metadata`; `PAGE_KV` ∈ {64, 128, 256}
-  (FP4 also 32) with `SPLIT_KV = BLOCK_KV * num_groups`.
+  `sched::sm120_paged_mqa_logits_metadata`; `PAGE_KV` ∈ {32, 64, 128, 256}
+  with `SPLIT_KV = BLOCK_KV * num_groups`.
 - **Sparse MQA logits** (`sm120_fp8_fp4_sparse_mqa_logits_kernel`) — the
   sparse metadata blob (`layout/sparse_mqa_logits.cuh` layout), top-k
   indices / block tables for the paged variant, and the shared-memory sizing

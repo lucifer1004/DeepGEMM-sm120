@@ -53,8 +53,10 @@ static auto k_fp4_mqa_logits = &sm120_fp4_mqa_logits<
     64, 128, false, 2, 128, 2, 5, 24, 128, 256, cutlass::bfloat16_t>;
 
 // ---------------------------------------------------------------------------
-// Paged MQA logits. SPLIT_KV = 128 = BLOCK_KV * groups; BLOCK_KV = 64.
-// FP8 supports PAGE_KV in {64, 128, 256}; instantiate 64 and 256.
+// Paged MQA logits. SPLIT_KV = 128 = BLOCK_KV * groups; BLOCK_KV = min(PAGE_KV, 64).
+// FP8 supports PAGE_KV in {32, 64, 128, 256}; instantiate 32, 64 and 256.
+static auto k_fp8_paged_mqa_logits_p32 = &sm120_fp8_paged_mqa_logits<
+    1, 64, 128, 32, false, false, 2, 3, 128, 128, 256, float>;
 static auto k_fp8_paged_mqa_logits_p64 = &sm120_fp8_paged_mqa_logits<
     1, 64, 128, 64, false, false, 2, 3, 128, 128, 256, float>;
 static auto k_fp8_paged_mqa_logits_p256 = &sm120_fp8_paged_mqa_logits<

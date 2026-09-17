@@ -43,8 +43,8 @@ the copies disagreed, one mechanism was kept and the other superseded:
 2. **`sm120_split_k_reduce`.** Kept: the superset variant with `gmem_c`
    (C-accumulate), `alpha`, explicit C/D strides, and HeadSplits support.
    Superseded: the fork's boolean `kWithAccumulation` template variant.
-3. **Paged MQA logits.** Kept: the `PAGE_KV` ∈ {64, 128, 256} generalization
-   (FP4 additionally {32}) in which `BLOCK_KV` is derived from `PAGE_KV` and
+3. **Paged MQA logits.** Kept: the `PAGE_KV` ∈ {32, 64, 128, 256} generalization
+   in which `BLOCK_KV` is derived from `PAGE_KV` and
    within-page addressing is done with a `page_offset` TMA coordinate.
    Superseded: the fork's `BLOCK_KV == page size` assumption.
 4. **SM120-owned GEMM scheduler.** The GEMM impls include
